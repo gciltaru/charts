@@ -1,11 +1,13 @@
-from locust import HttpLocust, TaskSet, task
+from locust import HttpLocust, TaskSet, task, between
 
 class ElbTasks(TaskSet):
   @task
   def status(self):
-      self.client.get("/status")
+    payload = {"key": "value"}
+    response = self.client.post("/", json=payload)
+    if not response.ok:
+    	print(response.status_code, " content: ", response.content)
 
 class ElbWarmer(HttpLocust):
   task_set = ElbTasks
-  min_wait = 1000
-  max_wait = 3000
+  wait_time = between(1, 20)
